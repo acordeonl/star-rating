@@ -34,14 +34,11 @@ If star-rating is for reading only it can be set the following way and using a d
 <dom-module id="star-rating">
     <template>
         <style>
-            :host {
-                --star-color: #4775D1 ;
-            }
             iron-icon {
-                color: var(--star-color);
+                color: var(--star-color,#4775D1);
             }
             paper-icon-button {
-                color: var(--star-color);
+                color: var(--star-color,#4775D1);
                 --paper-icon-button-disabled: {
                     color: #4775D1;
                 };
