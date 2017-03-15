@@ -34,11 +34,14 @@ If star-rating is for reading only it can be set the following way and using a d
 <dom-module id="star-rating">
     <template>
         <style>
+            :host {
+                --star-color: #4775D1 ;
+            }
             iron-icon {
-                color: var(--theme-color1,#4775D1);
+                color: var(--star-color);
             }
             paper-icon-button {
-                color: var(--theme-color1,#4775D1);
+                color: var(--star-color);
                 --paper-icon-button-disabled: {
                     color: #4775D1;
                 };
@@ -65,7 +68,9 @@ If star-rating is for reading only it can be set the following way and using a d
     <script>
         Polymer({
             is: "star-rating",
-            observers: [],
+            observers: [
+              '_updateStars(rate)'
+            ],
             behaviors: [],
             listeners: {},
             properties: {
@@ -85,17 +90,17 @@ If star-rating is for reading only it can be set the following way and using a d
                 }
             },
             ready: function () {
-                this._updateStars();
+                this._updateStars(this.rate);
                 this.$.domRepeat.render();
             },
             _updateRate: function (e) {
                 var id = parseInt(e.currentTarget.id);
                 this.rate = id + 1;
-                this._updateStars();
+                this._updateStars(this.rate);
             },
-            _updateStars: function () {
-                var intPart = Math.floor(this.rate);
-                var decimalPart = this.rate % 1;
+            _updateStars: function (rate) {
+                var intPart = Math.floor(rate);
+                var decimalPart = rate % 1;
                 for (var i = 0; i < 5; i++) {
                     this._stars[i] = "star-border";
                     if (i < intPart)
