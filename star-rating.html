@@ -1,112 +1,92 @@
-<imports >
-    <link rel="import" href="../polymer/polymer.html">
-    <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-    <link rel="import" href="../iron-icons/iron-icons.html">
-    <link rel="import" href="../iron-icon/iron-icon.html">
-</imports>
-
-<!--
-
-Shows 5 star rating or enables a 5 star rating vote using paper-icon-button and iron-icon.
-
-### Usage
-Rate can be set as an attribute.
-
-    <star-rating rate="2.3"></star-rating>
-
-If star-rating is for reading only it can be set the following way and using a div tag with votes to set the number of votes for the rating
-
-    <star-rating red rate="2" read-only>
-        <div votes>
-            &nbsp (12
-            votes)
-        </div>
-    </star-rating>
-
-### Styling
- Custom property | Description | Default
-----------------|-------------|----------
-`--star-color` | Color set for stars | `#4775D1`
-
-@demo demo/star-rating-demo.html
--->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 
 <dom-module id="star-rating">
-    <template>
-        <style>
-            iron-icon {
-                color: var(--theme-color1,#4775D1);
-            }
-            paper-icon-button {
-                color: var(--theme-color1,#4775D1);
-                --paper-icon-button-disabled: {
-                    color: #4775D1;
-                };
-            }
-            [score] {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-            }
-        </style>
-        <div score>
-            <template id="domRepeat" is="dom-repeat" items="{{_stars}}" as="star">
-                <template is="dom-if" if="[[readOnly]]">
-                    <iron-icon icon="{{star}}"></iron-icon>
-                </template>
-                <template is="dom-if" if="[[!readOnly]]">
-                    <paper-icon-button disabled$={{readOnly}} id="{{index}}" on-click="_updateRate" icon="{{star}}"></paper-icon-button>
-                </template>
-            </template>
-            <template is="dom-if" if="[[readOnly]]">
-                <content select='[votes]'></content>
-            </template>
-        </div>
-    </template>
-    <script>
-        Polymer({
-            is: "star-rating",
-            observers: [],
-            behaviors: [],
-            listeners: {},
-            properties: {
-                _stars: {
-                    type: Array,
-                    value: ["star", "star", "star-half", "star", "star-border"]
-                },
-                // number of stars assigned for score
-                rate: {
-                    type: Number,
-                    value: 0
-                },
-                // show votes and disble scoring option
-                readOnly: {
-                    type: Boolean,
-                    value: false
-                }
-            },
-            ready: function () {
-                this._updateStars();
-                this.$.domRepeat.render();
-            },
-            _updateRate: function (e) {
-                var id = parseInt(e.currentTarget.id);
-                this.rate = id + 1;
-                this._updateStars();
-            },
-            _updateStars: function () {
-                var intPart = Math.floor(this.rate);
-                var decimalPart = this.rate % 1;
-                for (var i = 0; i < 5; i++) {
-                    this._stars[i] = "star-border";
-                    if (i < intPart)
-                        this._stars[i] = "star";
-                    }
-                if (decimalPart >= 0.5)
-                    this._stars[intPart] = "star-half";
-                var array = this._stars;
-                this._stars = [];
-                this._stars = array;
-            }
-        });
-    </script>
+  <template>
+
+    <style>
+      :host {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+
+        @apply(--star-rating);
+      }
+      iron-icon {
+        color: var(--star-rating-color, #4775D1);
+        @apply(--star-rating-iron-icon);
+      }
+      paper-icon-button {
+        color: var(--star-rating-color, #4775D1);
+        @apply(--star-rating-iron-icon-button);
+      }
+    </style>
+
+    <div>
+      <template id="domRepeat" is="dom-repeat" items="{{_stars}}" as="star">
+
+        <!-- The read-only version of the element -->
+        <template is="dom-if" if="[[readOnly]]">
+          <iron-icon icon="{{star.value}}"></iron-icon>
+        </template>
+
+        <!-- The wrote version of the element -->
+        <template is="dom-if" if="[[!readOnly]]">
+          <paper-icon-button id="{{index}}" on-click="_updateValue" icon="{{star.value}}"></paper-icon-button>
+        </template>
+
+      </template>
+
+      <!-- The slot to show extra text-->
+      <template is="dom-if" if="[[readOnly]]">
+        <slot name="votes"></slot>
+      </template>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: "star-rating",
+
+      observers: [
+          '_updateStars(value)'
+      ],
+
+      behaviors: [
+        Polymer.IronFormElementBehavior
+      ],
+
+      properties: {
+        _stars: {
+          type: Array,
+          value: function(){ return [ { value: "star" }, { value: "star" }, { value: "star-half" }, { value: "star" }, { value: "star-border" } ]; },
+        },
+        value: {
+          type: Number,
+          value: 0
+        },
+        readOnly: {
+          type: Boolean,
+          value: false
+        }
+      },
+      _updateValue: function( e ) {
+        var id = parseInt( e.currentTarget.id );
+        this.value = id + 1;
+      },
+
+      _updateStars: function( value ) {
+        var intPart = Math.floor( value );
+        var decimalPart = value % 1;
+        for( var i = 0; i < 5; i++ ) {
+            this.set( '_stars.' +  i + '.value',  (i < intPart) ?  'star' : 'star-border' ) ;
+        }
+        if( decimalPart >= 0.5 )this.set( '_stars.' +  intPart + '.value', "star-half" );
+      },
+
+    });
+  </script>
 </dom-module>
