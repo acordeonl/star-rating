@@ -76,7 +76,8 @@ If star-rating is for reading only it can be set the following way and using a d
                 // number of stars assigned for score
                 rate: {
                     type: Number,
-                    value: 0
+                    value: 0,
+                    observer: '_updateStars'
                 },
                 // show votes and disble scoring option
                 readOnly: {
@@ -91,7 +92,6 @@ If star-rating is for reading only it can be set the following way and using a d
             _updateRate: function (e) {
                 var id = parseInt(e.currentTarget.id);
                 this.rate = id + 1;
-                this._updateStars();
             },
             _updateStars: function () {
                 var intPart = Math.floor(this.rate);
