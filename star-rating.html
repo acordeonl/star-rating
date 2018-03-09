@@ -44,7 +44,7 @@
             static get properties() {return {
                 _stars: {type: Array,value: ["star", "star", "star-half", "star", "star-border"]},
                 // number of stars assigned for score
-                rate: {type: Number,value: 0,observer:'_updateStars'},
+                rate: {type: Number,value: 0,observer:'_updateStars',notify:true},
                 // show votes and disble scoring option
                 readOnly: {type: Boolean,value: false}
             }}
